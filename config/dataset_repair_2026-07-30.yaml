@@ -1,0 +1,34 @@
+schema_version: 1
+description: Bounded repair policy for the curated 2026-07-30 S1/B1/S2 collection.
+
+admission:
+  max_repaired_frame_rate: 0.05
+
+offline_alignment:
+  master_camera: camera_wrist_left
+  output_fps: 15
+  timeline_mode: uniform
+  camera_max_delta_ms: 30
+  arm_max_delta_ms: 30
+  hand_max_delta_ms: 30
+  base_max_delta_ms: 100
+  repair:
+    enabled: true
+    max_delta_ms: 250
+    max_neighbor_span_ms: 450
+    max_consecutive_frames: 5
+    arm_state_endpoint_max_delta_rad: 0.15
+    arm_action_endpoint_max_delta_rad: 0.15
+    hand_state_o6_endpoint_max_delta: 64.0
+    hand_state_wuji_endpoint_max_delta_rad: 0.15
+    hand_action_o6_endpoint_max_delta: 64.0
+    hand_action_wuji_endpoint_max_delta_rad: 0.15
+    camera_max_delta_ms: 125
+    camera_max_consecutive_frames: 3
+    wrist_pair_max_consecutive_frames: 3
+    wrist_pair_camera_max_delta_ms: 125
+    max_missing_timing_frames: 1
+    max_timing_gap_ms: 160
+    timing_jitter_tolerance_ms: 20
+    timing_camera_max_delta_ms: 125
+    trim_invalid_edges: true

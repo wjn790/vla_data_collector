@@ -1,0 +1,64 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+skills: skills.yaml
+base_priors: base_priors.yaml
+collector_config: svt.yaml
+
+control:
+  hz: 15
+  chunk_size: 50
+  execute_frames: 3
+  inference_watchdog_ms: 500
+  base_zero_stable_sec: 0.5
+  base_feedback_zero_tolerance: 0.01
+  command_owner_lock: /tmp/svt_long_task_supervisor.lock
+  hand_owner_lock: /tmp/svt_dual_hand_command.lock
+
+policy:
+  host: 10.0.0.18
+  port: 8006
+
+ros:
+  domain_id: 56
+  joint_state_topic: /joint_states
+  left_arm_command_topic: /left_forward_position_controller/commands
+  right_arm_command_topic: /right_forward_position_controller/commands
+  base_command_topic: /svtrobot_cmd
+  base_feedback_topic: /chassis/cmd_feedback
+  joint_names:
+    - openarm_left_joint1
+    - openarm_left_joint2
+    - openarm_left_joint3
+    - openarm_left_joint4
+    - openarm_left_joint5
+    - openarm_left_joint6
+    - openarm_left_joint7
+    - openarm_right_joint1
+    - openarm_right_joint2
+    - openarm_right_joint3
+    - openarm_right_joint4
+    - openarm_right_joint5
+    - openarm_right_joint6
+    - openarm_right_joint7
+
+arm_limits:
+  # Derived from the installed OpenArm v10 URDF, with the bimanual offsets applied.
+  lower: [-3.490659, -3.316125, -1.570796, 0.0, -1.570796, -0.785398, -1.570796, -1.396263, -0.174533, -1.570796, 0.0, -1.570796, -0.785398, -1.570796]
+  upper: [1.396263, 0.174533, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796, 3.490659, 3.316125, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796]
+  position_margin_rad: 0.05
+  max_velocity_radps: 0.35
+  max_acceleration_radps2: 0.70
+
+hands:
+  left_o6_min: [0, 0, 0, 0, 0, 0]
+  left_o6_max: [255, 255, 255, 255, 255, 255]
+  right_virtual_to_raw:
+    - {virtual_index: 0, raw_indices: [2, 3]}
+    - {virtual_index: 1, raw_indices: [0]}
+    - {virtual_index: 2, raw_indices: [4]}
+    - {virtual_index: 3, raw_indices: [8]}
+    - {virtual_index: 4, raw_indices: [12]}
+    - {virtual_index: 5, raw_indices: [16]}
+  hardware_config: /home/svt/glove_control/wuji_bridge/dual_hand_config.json
+  wuji_serial: "306535703434"
+  hardware_limit_margin_rad: 0.02

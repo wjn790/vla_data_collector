@@ -1,0 +1,146 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+fps: 15
+output_root: /svtrobo_data/vla_data
+jpeg_quality: 92
+camera_encoder_queue_frames: 8
+camera_encoder_sentinel_timeout_sec: 0.5
+camera_encoder_shutdown_timeout_sec: 2.0
+camera_shutdown_timeout_sec: 4.0
+zed_startup_gate_timeout_sec: 12.0
+minimum_free_gb: 20
+
+camera_diagnostics:
+  print_warnings: true
+  hardware_gap_warn_ms: 50
+  grab_duration_warn_ms: 50
+  encoder_queue_delay_warn_ms: 50
+
+cameras:
+  camera_top:
+    enabled: true
+    backend: zed
+    serial: 37593173
+    resolution: HD720
+    sensors_required: false
+    open_retry_count: 5
+    open_retry_delay_sec: 2.0
+    conflicts_service: svtrobo-web.service
+    width: 1280
+    height: 720
+    fps: 30
+  camera_wrist_left:
+    enabled: true
+    backend: realsense
+    serial: "352122271979"
+    width: 640
+    height: 480
+    fps: 30
+  camera_wrist_right:
+    enabled: true
+    backend: realsense
+    serial: "260322277463"
+    width: 640
+    height: 480
+    fps: 30
+
+ros:
+  setup_files:
+    - /opt/ros/humble/setup.bash
+    - /home/svt/svtrobo_ws/install/setup.bash
+  arms:
+    domain_id: 56
+    localhost_only: 1
+    joint_state_topic: /joint_states
+    left_command_topic: /left_forward_position_controller/commands
+    right_command_topic: /right_forward_position_controller/commands
+    joint_names:
+      - openarm_left_joint1
+      - openarm_left_joint2
+      - openarm_left_joint3
+      - openarm_left_joint4
+      - openarm_left_joint5
+      - openarm_left_joint6
+      - openarm_left_joint7
+      - openarm_right_joint1
+      - openarm_right_joint2
+      - openarm_right_joint3
+      - openarm_right_joint4
+      - openarm_right_joint5
+      - openarm_right_joint6
+      - openarm_right_joint7
+  base:
+    domain_id: 56
+    localhost_only: 1
+    command_topic: /svtrobot_cmd
+    feedback_topic: /chassis/cmd_feedback
+    joint_state_topic: /chassis/joint_states
+
+hands:
+  log_glob: /home/svt/glove_control/logs/teleop_actions_*.jsonl
+  stale_after_ms: 250
+  runtime_abort_after_ms: 1000
+  left_names:
+    - thumb_cmc_pitch
+    - thumb_cmc_yaw
+    - index_mcp_pitch
+    - middle_mcp_pitch
+    - ring_mcp_pitch
+    - pinky_mcp_pitch
+  # Wuji is flattened finger-major: thumb, index, middle, ring, little;
+  # each finger contains j0, j1, j2, j3. The raw 20 values are always kept.
+  # These six virtual joints can be changed later and regenerated from raw data.
+  right_virtual_projection:
+    - name: thumb_cmc_pitch
+      terms: [{index: 2, weight: 0.5}, {index: 3, weight: 0.5}]
+    - name: thumb_cmc_yaw
+      terms: [{index: 0, weight: 1.0}]
+    - name: index_mcp_pitch
+      terms: [{index: 4, weight: 1.0}]
+    - name: middle_mcp_pitch
+      terms: [{index: 8, weight: 1.0}]
+    - name: ring_mcp_pitch
+      terms: [{index: 12, weight: 1.0}]
+    - name: pinky_mcp_pitch
+      terms: [{index: 16, weight: 1.0}]
+
+timing:
+  camera_stale_after_ms: 200
+  camera_buffer_frames: 32
+  camera_buffer_retention_ms: 500
+  camera_pair_wait_ms: 30
+  wrist_pair:
+    left_camera: camera_wrist_left
+    right_camera: camera_wrist_right
+    max_age_ms: 50
+    max_skew_ms: 30
+    max_group_span_ms: 50
+  arm_stale_after_ms: 200
+  base_stale_after_ms: 300
+  startup_timeout_sec: 20
+
+offline_alignment:
+  master_camera: camera_wrist_left
+  output_fps: 15
+  timeline_mode: uniform
+  camera_max_delta_ms: 30
+  arm_max_delta_ms: 30
+  hand_max_delta_ms: 35
+  base_max_delta_ms: 100
+  repair:
+    enabled: true
+    max_delta_ms: 250
+    max_neighbor_span_ms: 450
+    max_consecutive_frames: 5
+    arm_state_endpoint_max_delta_rad: 0.15
+    arm_action_endpoint_max_delta_rad: 0.15
+    hand_state_o6_endpoint_max_delta: 64.0
+    hand_state_wuji_endpoint_max_delta_rad: 0.15
+    hand_action_o6_endpoint_max_delta: 64.0
+    hand_action_wuji_endpoint_max_delta_rad: 0.15
+    camera_max_delta_ms: 75
+    camera_max_consecutive_frames: 1
+    max_missing_timing_frames: 1
+    max_timing_gap_ms: 160
+    timing_jitter_tolerance_ms: 20
+    timing_camera_max_delta_ms: 90

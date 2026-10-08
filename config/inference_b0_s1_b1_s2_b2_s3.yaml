@@ -1,0 +1,136 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+execution_profile: b0_s1_b1_s2_b2_s3
+motion_acknowledgement: SVT_B0_S1_B1_S2_B2_S3_V1
+skills: skills.yaml
+base_priors: base_priors.yaml
+collector_config: svt.yaml
+
+# S2 and S3 end only when the operator confirms success. This avoids forcing
+# collection-time duration limits onto real execution.
+skill_overrides:
+  S2: {max_duration_sec: null}
+  S3: {max_duration_sec: null}
+
+control:
+  hz: 15
+  chunk_size: 50
+  # Diagnostic mode: execute one block, hold its final target, then capture a
+  # fresh observation and wait for the next policy response.
+  inference_mode: synchronous
+  execute_frames: 25
+  inference_watchdog_ms: 3000
+  s1_hand_phase_filter_enabled: true
+  s1_hand_open_threshold: 200
+  s1_hand_closed_threshold: 150
+  s1_three_finger_closed_threshold: 40
+  s1_three_finger_confirm_frames: 5
+  s1_grasp_confirm_frames: 5
+  # Cold torch.compile was measured at about 54 s; keep startup margin while
+  # leaving the steady-state 3000 ms watchdog unchanged.
+  policy_warmup_timeout_sec: 120.0
+  policy_warmup_repeats: 2
+  stage_reset_timeout_sec: 10.0
+  base_feedback_mode: observe
+  base_zero_stable_sec: 0.5
+  base_feedback_zero_tolerance: 0.01
+  command_owner_lock: /tmp/svt_long_task_supervisor.lock
+  hand_owner_lock: /tmp/svt_dual_hand_command.lock
+
+# Match the existing S1/S2 executor's training-distribution start state.
+s1_preset:
+  enabled: true
+  confirm: false
+  arm_position: [-0.070, -0.069, -0.120, 0.288, 0.270, -0.393, 0.266, 0.069, 0.020, 0.138, 0.254, -0.870, 0.323, -0.654]
+  hand_position: [254.0, 255.0, 254.0, 240.0, 254.0, 253.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  tolerance_rad: 0.05
+  timeout_sec: 25.0
+  stall_sec: 2.0
+
+policy:
+  host: 10.0.0.18
+  port: 8006
+  protocol_version: svt-policy-v1
+  deployment_contract_id: svt-cabinet-s1-s2-s3-from-base-step25000-v1
+  model_path: /nas/wjn/outputs/lingbot-vla-v2/svt_cabinet_s1_s2_s3_from_base_v1/formal_gpu6_30k/checkpoints/global_step_25000/hf_ckpt
+  robot_config: svt_cabinet_s1_s2_s3
+  normalization_sha256: 476236086593e0a58a063573b734f7ba701141fc3a4f16860213f00bc724bbb1
+  robot_config_sha256: 165189a57bb85dab924ab0563b2087981e853d1a1da044eeba6e056e29c8627d
+  training_config_sha256: 0d4dbafa159e4dcc6171d4c05619397bec749e7735358375ed6ca2fb45b8de73
+  checkpoint_index_sha256: 2fefd49c3f6f3df2f3f31fd3c98f06a4a430cd2394e5ba7ec0bf68a41e71b1b2
+
+# Median first-frame state from all 132 S3 training episodes. Only the left arm
+# and O6 move during this transition; the right arm and Wuji hand stay latched.
+s3_preset:
+  enabled: true
+  source: svt_cabinet_s3_lerobot_train_v1_first_frame_median_132_episodes
+  left_arm_position: [-0.031281, -0.185206, -0.141337, 1.544785, 0.403983, -0.075532, 0.006294]
+  left_hand_position: [254.0, 255.0, 254.0, 231.0, 254.0, 254.0]
+  max_velocity_radps: 0.20
+  max_hand_velocity_units_per_sec: 150.0
+  min_duration_sec: 2.0
+  max_duration_sec: 12.0
+  arm_tolerance_rad: 0.06
+  hand_tolerance: 25.0
+  settle_sec: 0.5
+
+ros:
+  domain_id: 56
+  require_base_feedback: false
+  joint_state_topic: /joint_states
+  left_arm_command_topic: /left_forward_position_controller/commands
+  right_arm_command_topic: /right_forward_position_controller/commands
+  base_command_topic: /svtrobot_cmd
+  base_feedback_topic: /chassis/cmd_feedback
+  joint_names:
+    - openarm_left_joint1
+    - openarm_left_joint2
+    - openarm_left_joint3
+    - openarm_left_joint4
+    - openarm_left_joint5
+    - openarm_left_joint6
+    - openarm_left_joint7
+    - openarm_right_joint1
+    - openarm_right_joint2
+    - openarm_right_joint3
+    - openarm_right_joint4
+    - openarm_right_joint5
+    - openarm_right_joint6
+    - openarm_right_joint7
+
+arm_limits:
+  lower: [-3.490659, -3.316125, -1.570796, 0.0, -1.570796, -0.785398, -1.570796, -1.396263, -0.174533, -1.570796, 0.0, -1.570796, -0.785398, -1.570796]
+  upper: [1.396263, 0.174533, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796, 3.490659, 3.316125, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796]
+  position_margin_rad: 0.05
+  max_velocity_radps: 0.50
+  max_acceleration_radps2: null
+
+hands:
+  left_o6_min: [0, 0, 0, 0, 0, 0]
+  left_o6_max: [255, 255, 255, 255, 255, 255]
+  right_virtual_to_raw:
+    - {virtual_index: 0, raw_indices: [2, 3]}
+    - {virtual_index: 1, raw_indices: [0]}
+    - {virtual_index: 2, raw_indices: [4]}
+    - {virtual_index: 3, raw_indices: [8]}
+    - {virtual_index: 4, raw_indices: [12]}
+    - {virtual_index: 5, raw_indices: [16]}
+  hardware_config: /home/svt/glove_control/wuji_bridge/dual_hand_config.json
+  wuji_serial: "306535703434"
+  hardware_limit_margin_rad: 0.02
+
+base_publisher_takeover:
+  enabled: true
+  scope: full_inference_run
+  command_topic: /svtrobot_cmd
+  release_timeout_sec: 8.0
+  service_stop_timeout_sec: 12.0
+  service_start_timeout_sec: 20.0
+  status_timeout_sec: 5.0
+  sudo: /usr/bin/sudo
+  systemctl: /usr/bin/systemctl
+  managed_services:
+    - unit: svtrobo-f710.service
+      publisher_node: my_controller_node
+      enable_topic: /f710/enable
+      status_topic: /f710/status

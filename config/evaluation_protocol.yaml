@@ -1,0 +1,30 @@
+schema_version: 1
+single_skill:
+  trials_per_skill: 30
+  minimum_success_rate:
+    S1: 0.95
+    S2: 0.95
+    S3: 0.90
+    S4: 0.90
+    S5: 0.90
+    S6: 0.90
+long_chain:
+  standard_trials: 30
+  perturbation_trials: 20
+  minimum_overall_success_rate: 0.70
+required_safety:
+  maximum_safety_violations: 0
+  report_stage_outcomes: true
+failure_reasons:
+  - perception
+  - grasp
+  - release
+  - arm_motion
+  - hand_motion
+  - base_prior
+  - synchronization
+  - watchdog
+  - joint_limit
+  - collision
+  - operator_abort
+  - other

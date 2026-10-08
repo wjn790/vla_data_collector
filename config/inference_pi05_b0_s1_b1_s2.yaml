@@ -1,0 +1,174 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+execution_profile: b0_s1_b1_s2
+motion_acknowledgement: SVT_PI05_B0_S1_B1_S2_V1
+skills: skills.yaml
+base_priors: base_priors.yaml
+collector_config: svt.yaml
+
+# Per-stage overrides for this inference profile only. The shared skills.yaml
+# remains authoritative for collection. S2 runs until the operator confirms
+# completion, mirroring S1's operator-confirm semantics instead of the 15 s
+# collection-style cap.
+skill_overrides:
+  S2:
+    max_duration_sec: null
+
+control:
+  hz: 15
+  chunk_size: 50
+  # Execute 1.67 s (25 frames) from each 3.33 s policy chunk. Execution is
+  # synchronous: the next chunk is requested only after this block finishes, so
+  # the robot is stationary while inference runs. Replanning every 25 frames
+  # instead of 15 halves the number of chunk boundaries. The prefetch_* fields
+  # are inert and kept only for config validation.
+  execute_frames: 25
+  prefetch_after_frames: 1
+  prefetch_soft_deadline_ms: 800
+  # Synchronous watchdog: how long to wait for a policy response before
+  # declaring the server unhealthy. No motion is published while waiting, so a
+  # larger bound only costs pause time, not stale-action safety.
+  # PI0.5 latency must be measured in shadow mode before execution. The hard
+  # upper bound is deliberately larger than the old policy's steady latency;
+  # the robot remains stationary while a synchronous request is pending.
+  inference_watchdog_ms: 5000
+  # S1 O6 phase filter. Ch0-2 are open near 254 and closed near 100; ch3-5
+  # close first near zero. Five stable three-finger frames arm the full-grasp
+  # transition. During the five-frame full-grasp debounce, both the left arm
+  # and O6 are held so their learned timing cannot separate. Once grasped, the
+  # O6 stays latched through the concurrent B1 retreat while the arm may adjust.
+  s1_hand_phase_filter_enabled: true
+  s1_hand_open_threshold: 200
+  s1_hand_closed_threshold: 150
+  s1_three_finger_closed_threshold: 40
+  s1_three_finger_confirm_frames: 5
+  s1_grasp_confirm_frames: 5
+  # Query the compiled policy before any B/S stage. This request is never
+  # published to the robot, and therefore can absorb first-request compilation.
+  # Steady-state warmup is <1 s (see policy_warmup events), but a cold server
+  # (weight load + CUDA init + first-request compile) can exceed 20 s, hence
+  # the generous bound. Matches the 60 s policy startup_timeout elsewhere.
+  policy_warmup_timeout_sec: 180.0
+  policy_warmup_repeats: 2
+  # B0/B1 use certified command streams. The feedback topic is recorded when
+  # available but does not block this profile because it is not reliable on SVT.
+  base_feedback_mode: observe
+  base_zero_stable_sec: 0.5
+  base_feedback_zero_tolerance: 0.01
+  command_owner_lock: /tmp/svt_long_task_supervisor.lock
+  hand_owner_lock: /tmp/svt_dual_hand_command.lock
+
+# Pre-position both arms and open the O6 hand before S1 policy control, so
+# inference starts from the pose used by the training S1 segments (median of
+# 83 candidate episodes: left arm [-0.070,-0.069,-0.120,0.288,0.270,-0.393,0.266],
+# right arm [0.069,0.020,0.138,0.254,-0.870,0.323,-0.654], O6 open). This
+# avoids starting from a neutral pose the model never saw in training.
+s1_preset:
+  enabled: true
+  confirm: false
+  arm_position: [-0.070, -0.069, -0.120, 0.288, 0.270, -0.393, 0.266, 0.069, 0.020, 0.138, 0.254, -0.870, 0.323, -0.654]
+  hand_position: [254.0, 255.0, 254.0, 240.0, 254.0, 253.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  tolerance_rad: 0.05
+  timeout_sec: 25.0
+  stall_sec: 2.0
+
+policy:
+  host: 10.0.0.18
+  port: 8007
+  protocol_version: svt-pi05-policy-v1
+  policy_type: pi05
+  robot_config: svt_cabinet_b0_s1_b1_s2
+  startup_timeout_sec: 60.0
+  expected_model_path: /nas/LoHoD/experiments/pi05_svt_cabinet_b0_s1_b1_s2_20k_20260805_gpu2/output/checkpoints/020000/pretrained_model
+  expected_checkpoint_step: 20000
+  expected_action_feature_names:
+    - left_joint_1
+    - left_joint_2
+    - left_joint_3
+    - left_joint_4
+    - left_joint_5
+    - left_joint_6
+    - left_joint_7
+    - right_joint_1
+    - right_joint_2
+    - right_joint_3
+    - right_joint_4
+    - right_joint_5
+    - right_joint_6
+    - right_joint_7
+    - left_thumb_cmc_pitch
+    - left_thumb_cmc_yaw
+    - left_index_mcp_pitch
+    - left_middle_mcp_pitch
+    - left_ring_mcp_pitch
+    - left_pinky_mcp_pitch
+    - right_thumb_cmc_pitch
+    - right_thumb_cmc_yaw
+    - right_index_mcp_pitch
+    - right_middle_mcp_pitch
+    - right_ring_mcp_pitch
+    - right_pinky_mcp_pitch
+
+ros:
+  domain_id: 56
+  require_base_feedback: false
+  joint_state_topic: /joint_states
+  left_arm_command_topic: /left_forward_position_controller/commands
+  right_arm_command_topic: /right_forward_position_controller/commands
+  base_command_topic: /svtrobot_cmd
+  base_feedback_topic: /chassis/cmd_feedback
+  joint_names:
+    - openarm_left_joint1
+    - openarm_left_joint2
+    - openarm_left_joint3
+    - openarm_left_joint4
+    - openarm_left_joint5
+    - openarm_left_joint6
+    - openarm_left_joint7
+    - openarm_right_joint1
+    - openarm_right_joint2
+    - openarm_right_joint3
+    - openarm_right_joint4
+    - openarm_right_joint5
+    - openarm_right_joint6
+    - openarm_right_joint7
+
+arm_limits:
+  lower: [-3.490659, -3.316125, -1.570796, 0.0, -1.570796, -0.785398, -1.570796, -1.396263, -0.174533, -1.570796, 0.0, -1.570796, -0.785398, -1.570796]
+  upper: [1.396263, 0.174533, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796, 3.490659, 3.316125, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796]
+  position_margin_rad: 0.05
+  max_velocity_radps: 0.35
+  # Disabled by request. Position limits and the velocity limit remain active.
+  max_acceleration_radps2: null
+
+hands:
+  left_o6_min: [0, 0, 0, 0, 0, 0]
+  left_o6_max: [255, 255, 255, 255, 255, 255]
+  right_virtual_to_raw:
+    - {virtual_index: 0, raw_indices: [2, 3]}
+    - {virtual_index: 1, raw_indices: [0]}
+    - {virtual_index: 2, raw_indices: [4]}
+    - {virtual_index: 3, raw_indices: [8]}
+    - {virtual_index: 4, raw_indices: [12]}
+    - {virtual_index: 5, raw_indices: [16]}
+  hardware_config: /home/svt/glove_control/wuji_bridge/dual_hand_config.json
+  wuji_serial: "306535703434"
+  hardware_limit_margin_rad: 0.02
+
+# The existing paired-collection helper records the original enabled state and
+# restores it on normal completion, abort, or startup failure.
+base_publisher_takeover:
+  enabled: true
+  scope: full_inference_run
+  command_topic: /svtrobot_cmd
+  release_timeout_sec: 8.0
+  service_stop_timeout_sec: 12.0
+  service_start_timeout_sec: 20.0
+  status_timeout_sec: 5.0
+  sudo: /usr/bin/sudo
+  systemctl: /usr/bin/systemctl
+  managed_services:
+    - unit: svtrobo-f710.service
+      publisher_node: my_controller_node
+      enable_topic: /f710/enable
+      status_topic: /f710/status

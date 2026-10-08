@@ -1,0 +1,39 @@
+schema_version: 1
+dataset_date: "2026-07-30"
+
+groups:
+  priority:
+    - "145241"
+    - "150511"
+    - "150716"
+    - "150909"
+    - "155626"
+    - "155754"
+    - "160256"
+    - "160447"
+    - "161113"
+    - "161308"
+    - "161812"
+    - "161934"
+  visual_review:
+    - "145015"
+    - "151552"
+    - "151938"
+    - "152229"
+    - "152424"
+    - "153840"
+    - "155213"
+    - "155345"
+    - "155504"
+    - "160818"
+    - "160946"
+    - "161512"
+  partial_segment:
+    - "154430"
+
+segment_restrictions:
+  "154430":
+    include: ["S2"]
+    exclude: ["S1"]
+    reason: "S1 start pose requires manual review; only S2 may be admitted."
+

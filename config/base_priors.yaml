@@ -1,0 +1,136 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+command_topic: /svtrobot_cmd
+feedback_topic: /chassis/cmd_feedback
+sample_rate_hz: 15
+format: timestamped_twist_jsonl_v1
+
+# Candidate streams may be registered below for offline review, but they do not
+# authorize motion. A calibrated entry must copy an approved candidate into the
+# top-level stream and sha256 fields and set calibrated=true only after completing
+# every pending requirement. The supervisor refuses real execution otherwise.
+priors:
+  B0:
+    version: approved_2026-07-22_demo_112_v1
+    calibrated: true
+    stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B0_forward_to_cabinet.jsonl
+    sha256: fbd88e6c47136a167032f9045efefc36e9a57208c13b287bb9503358cc8572e2
+    max_duration_sec: 20
+    start_zero_sec: 0.5
+    end_zero_sec: 0.5
+    endpoint_tolerance: {translation_m: 0.03, rotation_deg: 3.0}
+    repeatability_trials_required: 20
+    candidate:
+      source_manifest: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/manifest.json
+      stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B0_forward_to_cabinet.jsonl
+      sha256: fbd88e6c47136a167032f9045efefc36e9a57208c13b287bb9503358cc8572e2
+      sample_count: 99
+      duration_sec: 6.533333333
+      integrated_command: {x_m: 0.32358774748619024, y_m: 0.0, yaw_rad: 0.0}
+      twist_stream_validation: passed
+      replay_approved: true
+      approved_at: "2026-07-29"
+      approval_note: operator_confirmed_recorded_data_correct
+      pending_requirements: []
+  B1:
+    version: approved_2026-07-22_demo_112_v1
+    calibrated: true
+    stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B1_retreat_pull_door.jsonl
+    sha256: e765419d925d7b8bc884aee39a9ac8e8b3b1a68e5488f614d4ed0a30fe17d71a
+    max_duration_sec: 15
+    start_zero_sec: 0.5
+    end_zero_sec: 0.5
+    endpoint_tolerance: {translation_m: 0.03, rotation_deg: 3.0}
+    repeatability_trials_required: 20
+    calibration_mode: low_speed_empty_load_with_operator_support
+    max_retreat_distance_m: 0.40
+    candidate:
+      source_manifest: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/manifest.json
+      stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B1_retreat_pull_door.jsonl
+      sha256: e765419d925d7b8bc884aee39a9ac8e8b3b1a68e5488f614d4ed0a30fe17d71a
+      sample_count: 113
+      duration_sec: 7.466666667
+      integrated_command: {x_m: -0.3785213396728489, y_m: 0.0, yaw_rad: 0.0}
+      twist_stream_validation: passed
+      replay_approved: true
+      approved_at: "2026-07-29"
+      approval_note: operator_confirmed_recorded_data_correct
+      pending_requirements: []
+  B2:
+    version: approved_2026-07-22_demo_112_v1
+    calibrated: true
+    stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B2_forward_to_pick_pose.jsonl
+    sha256: d267fca09c536c9fb31e9fdca07c05bab8f75dc7b65e05eff3f0e3cf58006536
+    max_duration_sec: 15
+    start_zero_sec: 0.5
+    end_zero_sec: 0.5
+    endpoint_tolerance: {translation_m: 0.03, rotation_deg: 3.0}
+    repeatability_trials_required: 20
+    candidate:
+      source_manifest: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/manifest.json
+      stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B2_forward_to_pick_pose.jsonl
+      sha256: d267fca09c536c9fb31e9fdca07c05bab8f75dc7b65e05eff3f0e3cf58006536
+      sample_count: 133
+      duration_sec: 8.8
+      integrated_command: {x_m: 0.45665494457952166, y_m: 0.0, yaw_rad: 0.0}
+      twist_stream_validation: passed
+      replay_approved: true
+      approved_at: "2026-08-05"
+      approval_note: operator_confirmed_recorded_data_correct_without_additional_calibration
+      pending_requirements: []
+  B3:
+    version: candidate_2026-07-22_demo_112_v1
+    calibrated: false
+    stream: null
+    sha256: null
+    max_duration_sec: 25
+    start_zero_sec: 0.5
+    end_zero_sec: 0.5
+    endpoint_tolerance: {translation_m: 0.03, rotation_deg: 3.0}
+    repeatability_trials_required: 20
+    candidate:
+      source_manifest: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/manifest.json
+      stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B3_composite_candidate.jsonl
+      sha256: 123445f372a21fbdc03ac0d7892cdd7cf232b0b92909db6927747e5034048e82
+      sample_count: 395
+      duration_sec: 26.266666667
+      integrated_command: {x_m: -0.2789327665714779, y_m: -0.9545206364995243, yaw_rad: 0.0}
+      twist_stream_validation: failed_max_duration
+      replay_approved: false
+      pending_requirements:
+        - reduce_or_approve_duration_above_25_sec
+        - 20_trial_endpoint_repeatability
+  B3R:
+    version: approved_2026-07-22_demo_112_retreat_only_v1
+    calibrated: true
+    stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B3R_retreat_candidate.jsonl
+    sha256: 9e1b5f4169a87669d95753652fa74a9e8536caa0091f5c1ce9369b058d1e6ff0
+    max_duration_sec: 10
+    start_zero_sec: 0.5
+    end_zero_sec: 0.5
+    endpoint_tolerance: {translation_m: 0.03, rotation_deg: 3.0}
+    repeatability_trials_required: 20
+    max_retreat_distance_m: 0.36
+    candidate:
+      source_manifest: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/manifest.json
+      source_stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B3_composite_candidate.jsonl
+      source_line_range: [1, 112]
+      stream: /home/svt/action_records/2026-07-22/105826_demo_112/base_stages_15hz_v1/B3R_retreat_candidate.jsonl
+      sha256: 9e1b5f4169a87669d95753652fa74a9e8536caa0091f5c1ce9369b058d1e6ff0
+      sample_count: 112
+      duration_sec: 7.4
+      active_command_interval_sec: [0.533333333, 6.266666667]
+      integrated_command: {x_m: -0.3395877883, y_m: 0.0, yaw_rad: 0.0}
+      max_abs_vx_mps: 0.06
+      twist_stream_validation: passed
+      replay_approved: true
+      approved_at: "2026-08-05"
+      approval_note: operator_confirmed_recorded_data_correct_without_additional_calibration
+      pending_requirements: []
+
+safety_limits:
+  max_abs_vx_mps: 0.15
+  max_abs_vy_mps: 0.15
+  max_abs_wz_radps: 0.20
+  feedback_zero_tolerance: 0.01
+  stable_zero_sec: 0.5

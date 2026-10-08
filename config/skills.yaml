@@ -1,0 +1,76 @@
+schema_version: 1
+prompt_set: svt_long_task_prompts_v4
+state_chain: [B0, S1, S2, B2, S3, B3, S4, S5, S6]
+
+skills:
+  S1:
+    prompt: grasp the cabinet door handle with the left hand, then hold it and adjust the left arm while the base retreats to pull the door open
+    prompt_version: v2
+    allowed_executors: [left_arm, left_hand]
+    hold_executors: [right_arm, right_hand]
+    concurrent_base_prior: B1
+    # S1 waits for the operator's grasp confirmation; it must not time out
+    # while the operator positions the left hand at the cabinet handle.
+    max_duration_sec: null
+    collection_hand_mode: button_primitive
+    standard_end_state: cabinet door reaches the prescribed opening while the left hand still holds the handle
+    completion:
+      mode: operator_confirm
+      grasp_phase: operator_confirm
+      final_phase: base_prior_complete
+    target_episodes: {train: 120, val: 15, test: 15, pilot: 30}
+  S2:
+    prompt: release the cabinet door handle, use the back of the left hand to push the cabinet door slightly farther open, then move the left arm clear
+    prompt_version: v3
+    allowed_executors: [left_arm, left_hand]
+    hold_executors: [right_arm, right_hand]
+    max_duration_sec: 15
+    collection_hand_mode: button_primitive
+    standard_end_state: cabinet door is slightly farther open, left hand is released, and left arm is unloaded and clear for base approach
+    completion:
+      mode: operator_confirm
+      requires_handle_release: true
+      required_contact_surface: back_of_left_hand
+      requires_additional_door_opening: true
+      requires_arm_clear: true
+    target_episodes: {train: 80, val: 10, test: 10, pilot: 30}
+  S3:
+    prompt: pick up the box from the cabinet with the left hand and hold it in the transport pose
+    prompt_version: v1
+    allowed_executors: [left_arm, left_hand]
+    hold_executors: [right_arm, right_hand]
+    max_duration_sec: 22
+    collection_hand_mode: button_primitive
+    standard_end_state: box is clear of the cabinet and held in transport pose
+    completion: {mode: operator_confirm}
+    target_episodes: {train: 160, val: 20, test: 20, pilot: 30}
+  S4:
+    prompt: pick up the spray bottle with the right hand while holding the box with the left hand
+    prompt_version: v1
+    allowed_executors: [right_arm, right_hand]
+    hold_executors: [left_arm, left_hand]
+    max_duration_sec: 22
+    collection_hand_mode: full_glove
+    standard_end_state: right hand stably holds the spray bottle and left hand still holds the box
+    completion: {mode: operator_confirm}
+    target_episodes: {train: 140, val: 20, test: 20, pilot: 30}
+  S5:
+    prompt: aim the spray bottle at the box and press the sprayer once
+    prompt_version: v1
+    allowed_executors: [right_arm, right_hand_index]
+    hold_executors: [left_arm, left_hand, right_hand_other_fingers]
+    max_duration_sec: 15
+    collection_hand_mode: s5_index_only
+    standard_end_state: sprayer completed one press and release and right hand still holds the bottle
+    completion: {mode: operator_confirm, required_press_count: 1}
+    target_episodes: {train: 220, val: 25, test: 25, pilot: 50}
+  S6:
+    prompt: place the box on the microscope stage with the left hand while holding the spray bottle with the right hand
+    prompt_version: v1
+    allowed_executors: [left_arm, left_hand]
+    hold_executors: [right_arm, right_hand]
+    max_duration_sec: 25
+    collection_hand_mode: full_glove
+    standard_end_state: box is stable on the microscope stage, left hand released, right hand holds spray bottle
+    completion: {mode: operator_confirm}
+    target_episodes: {train: 160, val: 20, test: 20, pilot: 30}

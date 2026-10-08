@@ -1,0 +1,12 @@
+# Python 依赖（当前验证环境：/home/svt/miniconda3）
+numpy==1.26.4
+PyYAML==6.0.3
+msgpack==1.1.1
+
+# 运行测试
+pytest==9.0.2
+
+# 以下为系统级依赖，无法通过 pip 安装：
+#  - ZED SDK 及其 Python API（pyzed），对应顶部 ZED 2i
+#  - Intel RealSense SDK（pyrealsense2），对应两台 D405 腕部相机
+#  - ROS 2（rclpy），采集器以 /usr/bin/python3 子进程使用，运行前需 source setup.bash

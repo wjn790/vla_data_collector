@@ -1,0 +1,14 @@
+[Unit]
+Description=SVT VLA data viewer
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/svt/lingbot_data_collector
+ExecStart=/home/svt/miniconda3/bin/python /home/svt/lingbot_data_collector/data_viewer.py --data-root /svtrobo_data/vla_data --host 0.0.0.0 --port 8765
+Restart=on-failure
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

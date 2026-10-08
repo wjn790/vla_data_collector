@@ -1,0 +1,17 @@
+[Unit]
+Description=SVT VLA offline alignment and data quality monitor
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/svt/lingbot_data_collector
+ExecStart=/home/svt/miniconda3/bin/python /home/svt/lingbot_data_collector/episode_quality_monitor.py --config /home/svt/lingbot_data_collector/config/data_quality_monitor.yaml
+Restart=on-failure
+RestartSec=3
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

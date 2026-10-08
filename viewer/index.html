@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>SVT 数据审阅</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-block">
+        <button class="icon-button mobile-only" id="sidebarToggle" type="button" title="打开数据列表" aria-label="打开数据列表">
+          <i data-lucide="panel-left"></i>
+        </button>
+        <div class="brand-mark">SVT</div>
+        <div>
+          <div class="brand-title">数据审阅</div>
+          <div class="brand-subtitle" id="datasetRoot">正在连接数据目录</div>
+        </div>
+      </div>
+      <div class="top-status">
+        <span class="status-dot" id="serviceDot"></span>
+        <span id="serviceStatus">连接中</span>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-controls">
+          <div class="mode-switch" role="group" aria-label="数据范围">
+            <button type="button" class="mode-button active" data-mode="all">全部</button>
+            <button type="button" class="mode-button" data-mode="paired">S1 / S2</button>
+            <button type="button" class="mode-button" data-mode="s3">S3</button>
+          </div>
+          <label class="search-field">
+            <i data-lucide="search"></i>
+            <input id="episodeSearch" type="search" placeholder="搜索 episode" autocomplete="off" />
+          </label>
+          <div class="filter-row">
+            <label>
+              <span>日期</span>
+              <select id="dayFilter"></select>
+            </label>
+            <span class="result-count" id="resultCount">0 条</span>
+          </div>
+        </div>
+        <div class="episode-list" id="episodeList" aria-live="polite"></div>
+      </aside>
+
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+      <main class="workspace" id="workspace">
+        <section class="empty-state" id="emptyState">
+          <div class="empty-icon"><i data-lucide="database"></i></div>
+          <h1>正在读取采集数据</h1>
+          <p id="emptyMessage">连接 SVT 数据目录中</p>
+        </section>
+
+        <div class="detail-view hidden" id="detailView">
+          <section class="episode-heading">
+            <div class="heading-main">
+              <div class="eyebrow" id="episodeDay">-</div>
+              <h1 id="episodeName">-</h1>
+              <div class="heading-badges" id="headingBadges"></div>
+            </div>
+            <div class="metric-strip" id="metricStrip"></div>
+          </section>
+
+          <section class="phase-section">
+            <div class="section-heading">
+              <div>
+                <h2>任务阶段</h2>
+                <p id="currentPhaseLabel">-</p>
+              </div>
+              <div class="phase-legend" id="phaseLegend"></div>
+            </div>
+            <div class="phase-track-wrap" id="phaseTrackWrap">
+              <div class="b0-prior" id="phasePrior">B0&nbsp;&nbsp;底盘先验 · 未进入训练数据</div>
+              <div class="phase-track" id="phaseTrack" role="slider" tabindex="0" aria-label="任务时间轴">
+                <div class="phase-segments" id="phaseSegments"></div>
+                <div class="base-window hidden" id="baseWindow"><span>B1H 底盘后退 + 左臂调整</span></div>
+                <div class="phase-marker grasp hidden" id="graspMarker" title="抓稳标记"></div>
+                <div class="playhead" id="phasePlayhead"></div>
+              </div>
+              <div class="phase-breakdown" id="phaseBreakdown"></div>
+            </div>
+            <div class="prompt-panel" id="promptPanel">
+              <div class="prompt-meta">
+                <span class="skill-chip" id="currentSkill">-</span>
+                <span id="currentPromptVersion">-</span>
+                <span id="currentFrameStatus">-</span>
+              </div>
+              <p id="currentPrompt">-</p>
+            </div>
+          </section>
+
+          <section class="camera-section">
+            <div class="section-heading camera-heading">
+              <div>
+                <h2>同步视角</h2>
+                <p id="frameTimestamp">-</p>
+              </div>
+              <div class="frame-counter">
+                <span>帧</span>
+                <input id="frameNumber" type="number" min="1" value="1" aria-label="当前帧" />
+                <span id="frameTotal">/ 0</span>
+              </div>
+            </div>
+            <div class="camera-grid" id="cameraGrid"></div>
+            <div class="transport">
+              <div class="transport-buttons">
+                <button class="icon-button" type="button" id="previousFrame" title="上一帧" aria-label="上一帧">
+                  <i data-lucide="skip-back"></i>
+                </button>
+                <button class="play-button" type="button" id="playPause" title="播放" aria-label="播放">
+                  <i data-lucide="play"></i>
+                </button>
+                <button class="icon-button" type="button" id="nextFrame" title="下一帧" aria-label="下一帧">
+                  <i data-lucide="skip-forward"></i>
+                </button>
+              </div>
+              <input class="frame-slider" id="frameSlider" type="range" min="0" max="0" value="0" aria-label="帧进度" />
+              <div class="speed-switch" role="group" aria-label="播放速度">
+                <button type="button" data-speed="0.5">0.5×</button>
+                <button type="button" class="active" data-speed="1">1×</button>
+                <button type="button" data-speed="2">2×</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="activity-section">
+            <div class="section-heading compact">
+              <div>
+                <h2>动作活动</h2>
+                <p>逐帧动作变化</p>
+              </div>
+              <div class="activity-legend">
+                <span><b class="activity-line arm"></b>左臂</span>
+                <span><b class="activity-line base"></b>底盘</span>
+              </div>
+            </div>
+            <canvas id="activityChart" height="112" aria-label="左臂与底盘动作活动图"></canvas>
+          </section>
+
+          <section class="segments-section">
+            <div class="section-heading compact">
+              <div>
+                <h2>Prompt 划分</h2>
+                <p id="segmentSummary">-</p>
+              </div>
+            </div>
+            <div class="segment-table-wrap">
+              <table class="segment-table">
+                <thead>
+                  <tr>
+                    <th>阶段</th>
+                    <th>Prompt</th>
+                    <th>帧范围</th>
+                    <th>时长</th>
+                    <th>底盘</th>
+                  </tr>
+                </thead>
+                <tbody id="segmentTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast hidden" id="toast" role="status"></div>
+
+    <script src="lucide.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

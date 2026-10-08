@@ -1,0 +1,93 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+joy_topic: /exo/gamepad_keys
+base_priors: base_priors.yaml
+collector_config: svt.yaml
+
+hand_controller:
+  enabled: true
+  module: /home/svt/glove_control/wuji_bridge/o6_button_controller.py
+  config: /home/svt/glove_control/wuji_bridge/dual_hand_config.json
+  left_c_button_index: 7
+  left_c_action_key: "4"
+
+base_publisher_takeover:
+  enabled: true
+  scope: first_right_a_through_s2_completion
+  command_topic: /svtrobot_cmd
+  release_timeout_sec: 8.0
+  service_stop_timeout_sec: 12.0
+  service_start_timeout_sec: 20.0
+  status_timeout_sec: 5.0
+  sudo: /usr/bin/sudo
+  systemctl: /usr/bin/systemctl
+  managed_services:
+    - unit: svtrobo-f710.service
+      publisher_node: my_controller_node
+      enable_topic: /f710/enable
+      status_topic: /f710/status
+
+buttons:
+  active_low: false
+  right_a: 11
+  right_b: 12
+  right_c_emergency: 13
+  right_d_reserved: 14
+
+collection:
+  python: /home/svt/miniconda3/bin/python
+  script: /home/svt/lingbot_data_collector/collect_episode.py
+  working_directory: /home/svt/lingbot_data_collector
+  output_root: /svtrobo_data/vla_data
+  attempt_directory: /home/svt/lingbot_data_collector/paired_attempts
+  log_directory: /home/svt/lingbot_data_collector/logs
+  perturbation: standard
+  hand_control_mode: button_primitive
+  operator: svt
+  no_offline_align: true
+  skills_config: skills.yaml
+
+ros:
+  domain_id: 56
+  base_command_topic: /svtrobot_cmd
+  base_feedback_topic: /chassis/cmd_feedback
+  joint_state_topic: /joint_states
+  joint_names:
+    - openarm_left_joint1
+    - openarm_left_joint2
+    - openarm_left_joint3
+    - openarm_left_joint4
+    - openarm_left_joint5
+    - openarm_left_joint6
+    - openarm_left_joint7
+    - openarm_right_joint1
+    - openarm_right_joint2
+    - openarm_right_joint3
+    - openarm_right_joint4
+    - openarm_right_joint5
+    - openarm_right_joint6
+    - openarm_right_joint7
+
+timing:
+  hz: 15
+  button_debounce_sec: 0.30
+  post_base_stable_delay_sec: 1.0
+  minimum_skill_recording_sec: 5.0
+  collector_start_timeout_sec: 30
+  collector_stop_timeout_sec: 30
+  base_zero_stable_sec: 0.5
+  base_feedback_zero_tolerance: 0.01
+  base_feedback_timeout_sec: 0.50
+  base_feedback_optional_stages:
+    - B0
+    - B1
+  base_open_loop_zero_hold_sec: 0.50
+  joint_feedback_timeout_sec: 0.50
+
+safety:
+  base_command_lock: /tmp/svt_paired_collection_base.lock
+  require_exclusive_base_publisher: true
+  emergency_zero_publish_count: 15
+  motion_acknowledgement: SVT_PAIRED_COLLECTION_V1
+
+event_log: /home/svt/lingbot_data_collector/logs/paired_collection_events.jsonl

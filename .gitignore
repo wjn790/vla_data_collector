@@ -1,0 +1,25 @@
+# 运行产物与采集数据（体积大，留在设备上，不入库）
+logs/
+quality_reports/
+paired_attempts/
+s3_attempts/
+backups/
+recordings/
+
+# 本地编辑备份（历史版本不入库）
+_code_backups/
+.codex_backups/
+*.bak
+*.bak.*
+*.bak_*
+*.backup
+*.backup_*
+*.backup.*
+*.codex-*
+*.new
+*.new.*
+
+# Python 运行缓存
+__pycache__/
+*.py[cod]
+.pytest_cache/

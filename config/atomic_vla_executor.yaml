@@ -1,0 +1,100 @@
+schema_version: 1
+robot_id: svt_dual_arm_mobile
+collector_config: svt.yaml
+task_prompt: pick up the bottle containing pink liquid and place it on the microscope stage
+event_log: /home/svt/lingbot_data_collector/logs/atomic_vla_executor.jsonl
+
+control:
+  hz: 15
+  chunk_size: 50
+  replan_frames: 20
+  max_chunk_frames: 25
+  inference_timeout_sec: 3.0
+  policy_response_max_age_sec: 1.6
+  max_duration_sec: 45
+  arm_feedback_max_age_sec: 0.20
+  hand_feedback_max_age_sec: 0.25
+  loop_lag_warn_ms: 25
+  final_hold_frames: 15
+  command_owner_lock: /tmp/svt_long_task_supervisor.lock
+  hand_owner_lock: /tmp/svt_dual_hand_command.lock
+
+policy:
+  host: 10.0.0.18
+  port: 8006
+  connect_timeout_sec: 10
+  robot_name: svt
+  expected_model_path: /nas/wjn/outputs/lingbot-vla-v2/svt_pink_bottle_train_v1_gpu34/checkpoints/global_step_6604/hf_ckpt
+  expected_action_keys:
+    - action.arm.position
+    - action.hand.position
+
+emergency_stop:
+  joy_topic: /exo/gamepad_keys
+  button_index: 13
+  active_low: false
+  debounce_sec: 0.30
+  startup_timeout_sec: 60.0
+  feedback_max_age_sec: 0.50
+
+runtime_takeover:
+  sudo: /usr/bin/sudo
+  systemctl: /usr/bin/systemctl
+  f710_service: svtrobo-f710.service
+  exoskeleton_launch_match:
+    - /opt/ros/humble/bin/ros2
+    - launch
+    - qnbot_teleoperator
+    - exoskeleton_bridge.launch.py
+  exoskeleton_node_match:
+    - /qnbot_teleoperator/exoskeleton_bridge_node
+    - __node:=exoskeleton_bridge_node
+  process_stop_timeout_sec: 10
+  process_start_timeout_sec: 15
+  service_timeout_sec: 15
+  exoskeleton_restore_log: /home/svt/lingbot_data_collector/logs/exoskeleton_bridge_restore.log
+
+ros:
+  domain_id: 56
+  command_discovery_sec: 2.0
+  joint_state_topic: /joint_states
+  left_arm_command_topic: /left_forward_position_controller/commands
+  right_arm_command_topic: /right_forward_position_controller/commands
+  base_command_topic: /svtrobot_cmd
+  base_feedback_topic: /chassis/cmd_feedback
+  joint_names:
+    - openarm_left_joint1
+    - openarm_left_joint2
+    - openarm_left_joint3
+    - openarm_left_joint4
+    - openarm_left_joint5
+    - openarm_left_joint6
+    - openarm_left_joint7
+    - openarm_right_joint1
+    - openarm_right_joint2
+    - openarm_right_joint3
+    - openarm_right_joint4
+    - openarm_right_joint5
+    - openarm_right_joint6
+    - openarm_right_joint7
+
+arm_limits:
+  lower: [-3.490659, -3.316125, -1.570796, 0.0, -1.570796, -0.785398, -1.570796, -1.396263, -0.174533, -1.570796, 0.0, -1.570796, -0.785398, -1.570796]
+  upper: [1.396263, 0.174533, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796, 3.490659, 3.316125, 1.570796, 2.443461, 1.570796, 0.785398, 1.570796]
+  position_margin_rad: 0.05
+  max_velocity_radps: 0.18
+  max_acceleration_radps2: 0.35
+
+hands:
+  left_o6_min: [0, 0, 0, 0, 0, 0]
+  left_o6_max: [255, 255, 255, 255, 255, 255]
+  right_virtual_to_raw:
+    - {virtual_index: 0, raw_indices: [2, 3]}
+    - {virtual_index: 1, raw_indices: [0]}
+    - {virtual_index: 2, raw_indices: [4]}
+    - {virtual_index: 3, raw_indices: [8]}
+    - {virtual_index: 4, raw_indices: [12]}
+    - {virtual_index: 5, raw_indices: [16]}
+  hardware_config: /home/svt/glove_control/wuji_bridge/dual_hand_config.json
+  wuji_serial: "306535703434"
+  hardware_limit_margin_rad: 0.02
