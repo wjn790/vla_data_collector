@@ -1,0 +1,55 @@
+[Unit]
+Description=Configure CAN interfaces for svtrobo
+# Waits for PCAN USB devices to register (~25s after boot on Jetson),
+# configures CAN interfaces, cleans stale FastRTPS shm.
+# NOTE: After PCAN err -71, devices may re-register with interfaces DOWN.
+# If CAN is already configured (can0 UP with FD bitrate), this is a no-op.
+After=sysinit.target f710-fix.service
+Wants=f710-fix.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+# 1. Wait for can0 to appear (PCAN USB registers ~25s after boot)\
+WAIT_DEV=0; \
+while [ $WAIT_DEV -lt 90 ] && ! ip link show can0 >/dev/null 2>&1; do \
+  sleep 1; WAIT_DEV=$((WAIT_DEV+1)); \
+done; \
+logger "svtrobo-can: can0 appeared after ${WAIT_DEV}s"; \
+if [ $WAIT_DEV -ge 90 ]; then logger "svtrobo-can: FATAL can0 not found after 90s"; exit 1; fi; \
+\
+# 2. Wait for all PCAN devices to stabilize (no new err -71 for 3s)\
+sleep 5; \
+ERR_BEFORE=$(dmesg | grep -c "pcan.*err"); \
+WAIT=0; \
+while [ $WAIT -lt 30 ]; do \
+  sleep 1; \
+  ERR_NOW=$(dmesg | grep -c "pcan.*err"); \
+  if [ "$ERR_NOW" -eq "$ERR_BEFORE" ]; then break; fi; \
+  ERR_BEFORE=$ERR_NOW; WAIT=$((WAIT+1)); \
+done; \
+logger "svtrobo-can: PCAN stabilized after ${WAIT}s (errors: $ERR_BEFORE)"; \
+\
+# 3. Configure CAN interfaces\
+for can_if in can0 can1; do \
+  ip link set $can_if down 2>/dev/null; \
+  ip link set $can_if type can bitrate 1000000 dbitrate 5000000 fd on 2>/dev/null; \
+  ip link set $can_if up 2>/dev/null; \
+done; \
+for can_if in can2 can3; do \
+  ip link set $can_if down 2>/dev/null; \
+  ip link set $can_if type can bitrate 1000000 2>/dev/null; \
+  ip link set $can_if up 2>/dev/null; \
+done; \
+for can_if in can4 can5; do \
+  ip link set $can_if down 2>/dev/null; \
+  ip link set $can_if type can bitrate 500000 2>/dev/null; \
+  ip link set $can_if up 2>/dev/null; \
+done; \
+chmod 777 /dev/ttyACM0 2>/dev/null; \
+rm -rf /dev/shm/fastrtps_* 2>/dev/null; \
+logger "svtrobo-can: CAN configured, FastRTPS shm cleaned"'
+
+[Install]
+WantedBy=multi-user.target

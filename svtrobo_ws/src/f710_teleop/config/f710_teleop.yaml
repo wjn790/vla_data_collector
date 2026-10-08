@@ -1,0 +1,74 @@
+/**:
+  ros__parameters:
+    # 设备路径：根据实际情况修改（例如 /dev/input/js1）
+    device_path: "/dev/input/js0"
+
+    # 手柄死区与发布频率
+    deadzone: 0.25
+    # 死区外线性拉伸，避免刚过死区就接近满速
+    deadzone.remap: true
+    # 摇杆低通（0=关），略降偶发抖动
+    axis.smoothing_alpha: 0.35
+    publish_rate: 25.0
+    # 首次按 A 之前不发布任何控制话题，防止抢占其他控制节点
+    safety.gate_until_first_a: true
+    # 是否必须一直按住 A 才走车（与 gate 二选一即可；一般 false）
+    safety.require_deadman: false
+    # B 短按急停并锁存，再按一次 A（上升沿）解除
+    safety.estop_latch: true
+    # 输入超时（秒）：超过该时间未收到手柄事件则停止发布任何控制话题
+    safety.input_timeout_sec: 1.0
+    # 手动调试可保持 0；systemd 自启建议 2~5，启动后仅发全 0，等设备就绪
+    startup.zero_cmd_sec: 0.0
+    # true=摇杆回中也按频率一直发；false=不操作时几乎不发（松杆会发一条全 0 停车）
+    cmd_vel.publish_always: false
+
+    # 最大线速度 / 角速度（单位按你的底盘侧约定）
+    velocity.max_linear: 1.0
+    velocity.max_angular: 1.0
+    # 右手柄角速度缩放，>1 时转向更大
+    velocity.angular_scale: 5.0
+
+    # 左手柄左右：发送的 linear.y 取反（true=发送时对 vy 取反）
+    invert.left_x: true
+    # 右手柄左右：发送的 angular.z 取反（true=发送时对角速度取反）
+    invert.right_x: true
+    # 右手柄有输入时禁用左手柄左右（true=用右摇杆时 linear.y 不发）
+    disable_left_x_when_right_active: true
+
+    # LT / RT 调整底盘速度缩放：
+    # - speed_scale.max: 默认上限
+    # - speed_scale.hard_max: 绝对上限（可超过 max，但不会超过 hard_max）
+    speed_scale.min: 0.01
+    speed_scale.max: 1.0
+    speed_scale.hard_max: 1.5
+    # 启动时的缩放；若大于 max，会自动夹紧到 max（与 hard_max 取较小者）
+    speed_scale.initial: 0.1
+    speed_scale.step: 0.05
+
+    # 升降速度 
+    lift.speed: 500
+
+    # 轴索引映射（以 jstest 为准；不同设备/驱动编号可能不同）
+    # 本机：右摇杆 左右=Axes2 → angular.z；前后=Axes3（本节点未用，仅作记录）
+    axis.left_x: 0     # 左摇杆 左右
+    axis.left_y: 1     # left stick forward/back
+    axis.right_x: 2    # 右摇杆 左右 → angular.z
+    axis.lt: 4         # 如需使用轴方式的 LT，可在此调整
+    axis.rt: 5         # 如需使用轴方式的 RT，可在此调整
+
+    # 按钮索引映射（根据 jstest /dev/input/js1 输出）
+    # 1 是 A，2 是 B
+    button.a: 1
+    button.b: 2
+    button.lb: 4
+    button.rb: 5
+    button.lt: 6       # LT
+    button.rt: 7       # RT
+
+    # 减速斜坡（仅作用于减速/停止阶段；加速不限速保持跟手）
+    # linear_decel 1.0 m/s² ≈ 1.0 m/s 到 0 用 1 秒；觉得仍冲就调小，觉得拖就调大
+    # 运行时可动态调整：ros2 param set /my_controller_node ramp.linear_decel 0.8
+    ramp.enabled: true
+    ramp.linear_decel: 0.4    # m/s²
+    ramp.angular_decel: 2.0   # rad/s²

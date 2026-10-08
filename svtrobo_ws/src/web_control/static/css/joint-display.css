@@ -1,0 +1,115 @@
+/* === Joint Display Panel (Arms + Hands) === */
+.panel-joint-status {
+    margin-top: 8px;
+}
+
+.arm-status-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.hand-status-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.joint-section {
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    padding: 16px;
+    min-height: 0;
+}
+
+.joint-section.offline .joint-table-body {
+    opacity: 0.3;
+}
+
+.joint-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.joint-section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.joint-section-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #475569;
+    transition: all 0.3s;
+}
+
+.joint-section-dot.online {
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.joint-section-dot.offline-dot {
+    background: #475569;
+}
+
+.joint-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+}
+
+.joint-table th {
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.joint-table th:first-child {
+    text-align: left;
+}
+
+.joint-table td {
+    padding: 5px 8px;
+    color: var(--accent);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    text-align: center;
+}
+
+.joint-table tr:last-child td {
+    border-bottom: none;
+}
+
+.joint-name-cell {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    text-align: left !important;
+    white-space: nowrap;
+}
+
+.joint-offline-text {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 20px 0;
+    font-family: inherit;
+}
+
+@media (max-width: 900px) {
+    .arm-status-body,
+    .hand-status-body {
+        grid-template-columns: 1fr;
+    }
+}

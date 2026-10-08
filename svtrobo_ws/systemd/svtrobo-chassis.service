@@ -1,0 +1,15 @@
+[Unit]
+Description=svtrobo Chassis Control
+After=svtrobo-rosbridge.service svtrobo-can.service
+Wants=svtrobo-rosbridge.service svtrobo-can.service
+
+[Service]
+Type=simple
+User=svt
+Environment=ROS_DOMAIN_ID=0
+ExecStart=/bin/bash -c "source /opt/ros/humble/setup.bash && source /home/svt/svtrobo_ws/install/setup.bash && exec ros2 launch chassis_control svtrobo_bringup.launch.py"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

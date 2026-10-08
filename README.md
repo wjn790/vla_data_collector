@@ -29,6 +29,7 @@
 - `viewer/` + `data_viewer.py`：网页数据查看器（systemd 服务见 `deploy/`）
 - `tests/`：离线单元测试（`python -m pytest tests`）
 - `config/`：采集、质检与推理 YAML 配置
+- `svtrobo_ws/`：机器人 ROS 2 工作空间源码快照（机械臂 / 底盘 / 灵巧手 / 相机驱动、web 控制、systemd 服务），取自设备 `/home/svt/svtrobo_ws` 的 git 跟踪文件并包含其后的未提交修改；原始仓库 `On-The-Ways/svtrobo_ws` 停在 2026-06-11。为公开分发，快照中的明文 sudo / CAN 密码已替换为占位符。
 
 ## 重要硬件限制
 

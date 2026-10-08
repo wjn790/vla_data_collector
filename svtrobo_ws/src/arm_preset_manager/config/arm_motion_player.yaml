@@ -1,0 +1,33 @@
+/**:
+  ros__parameters:
+    joy_topic: /f710/joy
+    command_topic: /arm/motion_cmd
+    status_topic: /arm/motion_status
+    left_arm_topic: /left_forward_position_controller/commands
+    right_arm_topic: /right_forward_position_controller/commands
+    data_dir: /home/svt/svtrobo_ws/src/arm_motion_data
+    dpad_deadzone: 0.5
+    playback_speed: 1.0
+    require_a_to_arm: true
+    button_a: 1
+
+    # 过渡插值：不同动作之间切换时，从当前姿态 smoothstep 过渡到新动作首帧
+    transition_duration: 0.8
+    transition_steps: 30
+
+    # Home 姿态（双击停止第二下回到此位置）
+    home_joints: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # 双击停止防抖窗口（秒）
+    stop_double_press_window: 1.0
+    # 循环播放（true=循环直到按stop，false=播放一次后停止）
+    loop: true
+
+    dpad_map.up: walk
+    dpad_map.down: grasp
+    dpad_map.left: turn
+    dpad_map.right: stop
+
+    motion_files.walk: walk.csv
+    motion_files.grasp: grasp.csv
+    motion_files.turn: turn.csv

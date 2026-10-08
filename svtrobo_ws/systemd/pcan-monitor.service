@@ -1,0 +1,21 @@
+[Unit]
+Description=PCAN err-71 Runtime Monitor and Auto-Recovery
+After=svtrobo-can.service
+Wants=svtrobo-can.service
+
+[Service]
+Type=simple
+User=svt
+ExecStart=/bin/bash /home/svt/svtrobo_ws/scripts/pcan_monitor.sh
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pcan-monitor
+
+# Logging
+LogRateLimitIntervalSec=0
+LogRateLimitBurst=0
+
+[Install]
+WantedBy=multi-user.target

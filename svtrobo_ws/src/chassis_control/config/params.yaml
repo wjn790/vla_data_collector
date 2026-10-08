@@ -1,0 +1,18 @@
+chassis_control:
+  ros__parameters:
+    robot:
+      chassis_radius: 0.0875
+      wheel_perimeter: 0.647
+      fl_motor_start_angle: 4.58
+      fr_motor_start_angle: 5.22
+      rl_motor_start_angle: 5.88
+      rr_motor_start_angle: 3.22
+    # 速率限制参数（运行时可通过 ros2 param set 动态调整）
+    limit:
+      max_angle_rate: 3.0        # 舵角最大变化率 (rad/s)，4轮独立限制
+      max_wheel_speed_rate: 50.0 # 轮速最大变化率 (RPM/s)，4轮合成矢量限制
+
+lift_control:
+  ros__parameters:
+    # Current lowest safe lift position, used as zero for /lift/position_relative_raw.
+    position_zero_raw: -9502721

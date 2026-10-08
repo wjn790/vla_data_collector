@@ -1,0 +1,12 @@
+[Unit]
+Description=F710 Gamepad Fix (Jetson hid-logitech workaround)
+DefaultDependencies=no
+Before=basic.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "echo 1 > /sys/module/hid/parameters/ignore_special_drivers"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

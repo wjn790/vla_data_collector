@@ -1,0 +1,15 @@
+[Unit]
+Description=ROS2 Rosbridge WebSocket Server
+After=network.target svtrobo-can.service
+Wants=svtrobo-can.service
+
+[Service]
+Type=simple
+User=svt
+Environment=ROS_DOMAIN_ID=0
+ExecStart=/bin/bash -c "source /opt/ros/humble/setup.bash && source /home/svt/svtrobo_ws/install/setup.bash && exec ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

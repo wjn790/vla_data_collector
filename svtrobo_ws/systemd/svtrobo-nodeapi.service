@@ -1,0 +1,17 @@
+[Unit]
+Description=svtrobo ROS Process API (Node.js)
+After=svtrobo-chassis.service
+
+[Service]
+Type=simple
+User=svt
+WorkingDirectory=/home/svt/ros_process_api
+Environment=ROS2_WORKSPACE_DIR=/home/svt/svtrobo_ws
+Environment=SUDO_PASSWORD=<sudo密码，在真机上填写>
+Environment=PATH=/usr/bin:/bin:/usr/local/bin
+ExecStart=/usr/bin/node /home/svt/ros_process_api/app.bundle.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

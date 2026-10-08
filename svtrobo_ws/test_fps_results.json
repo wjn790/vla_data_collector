@@ -1,0 +1,17 @@
+{
+  "zed_color_only": {
+    "error": "\u672a\u627e\u5230 ZED \u76f8\u673a\u8bbe\u5907"
+  },
+  "zed_stereo_depth": {
+    "error": "\u672a\u627e\u5230 ZED \u76f8\u673a\u8bbe\u5907"
+  },
+  "imu": {
+    "error": "\u672a\u627e\u5230 ZED \u76f8\u673a\u8bbe\u5907"
+  },
+  "recording_2hz": {
+    "error": "\u672a\u627e\u5230 ZED \u76f8\u673a\u8bbe\u5907"
+  },
+  "streaming": {
+    "error": "\u672a\u627e\u5230 ZED \u76f8\u673a\u8bbe\u5907"
+  }
+}

@@ -1,0 +1,62 @@
+/* === Distance Sensor Panel === */
+
+.distance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.distance-item {
+    text-align: center;
+    padding: 16px 12px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.distance-item:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--border-hover);
+}
+
+.distance-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.distance-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Consolas', monospace;
+    line-height: 1.2;
+    transition: color 0.3s;
+}
+
+.distance-value.dist-active {
+    color: var(--accent);
+}
+
+.distance-unit {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.distance-item .dist-icon {
+    font-size: 16px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .distance-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

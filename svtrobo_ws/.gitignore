@@ -1,0 +1,32 @@
+build/
+install/
+log/
+__pycache__/
+*.pyc
+.DS_Store
+
+# 测试截图
+**/captures/
+
+# 数据采集录制的图像和 rosbag（保留说明文档）
+recordings/*
+!recordings/README.md
+
+# Web 日志
+web.log
+
+# Office 文档
+*.docx
+
+# tmp 目录
+tmp/
+
+# Backup files
+*.bak
+*.bak_*
+
+# 第三方参考包（不属于 svt 项目）
+src/openarm_can/
+src/openarm_description/
+src/openarm_ros2/
+src/qnbot_teleoperator/

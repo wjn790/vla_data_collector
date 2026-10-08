@@ -1,0 +1,121 @@
+/* === Hardware Status Bar === */
+.hardware-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 24px;
+    background: rgba(9, 9, 11, 0.6);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.hw-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: default;
+    border: 1px solid transparent;
+}
+
+.hw-item .hw-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.hw-item .hw-label {
+    color: var(--text-secondary);
+    transition: color 0.3s;
+}
+
+.hw-item .hw-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+/* Online - Green */
+.hw-online {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.25);
+}
+.hw-online .hw-dot {
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+.hw-online .hw-label {
+    color: #6ee7b7;
+}
+
+/* Offline - Gray/Dim */
+.hw-offline {
+    background: rgba(100, 116, 139, 0.08);
+    border-color: rgba(100, 116, 139, 0.15);
+}
+.hw-offline .hw-dot {
+    background: #475569;
+}
+.hw-offline .hw-label {
+    color: #64748b;
+}
+
+/* Error - Red */
+.hw-error {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+.hw-error .hw-dot {
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+    animation: hw-error-pulse 2s ease-in-out infinite;
+}
+.hw-error .hw-label {
+    color: #fca5a5;
+}
+
+/* Unknown - Yellow */
+.hw-unknown {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+.hw-unknown .hw-dot {
+    background: #f59e0b;
+    animation: hw-unknown-blink 1.5s ease-in-out infinite;
+}
+.hw-unknown .hw-label {
+    color: #94a3b8;
+}
+
+@keyframes hw-error-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes hw-unknown-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Summary counter in status bar */
+.hw-summary {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 0 8px;
+    margin-left: 8px;
+    border-left: 1px solid var(--border);
+}
+
+.hw-summary .hw-count {
+    font-family: 'Consolas', monospace;
+}
+
+.hw-summary .hw-count.good { color: #10b981; }
+.hw-summary .hw-count.bad { color: #ef4444; }

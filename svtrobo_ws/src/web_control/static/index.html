@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVTROBO 控制台</title>
+    <!-- Modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/hardware-status.css">
+    <link rel="stylesheet" href="/static/css/joint-display.css">
+    <link rel="stylesheet" href="/static/css/rec-panel.css">
+    <link rel="stylesheet" href="/static/css/distance-sensor.css">
+    <link rel="stylesheet" href="/static/css/visual-relocalization.css">
+    <script src="/static/js/roslib.min.js?v=1779888539"></script>
+</head>
+<body>
+
+<!-- Header -->
+<header class="top-bar">
+    <div class="logo">
+        <div class="logo-icon"></div>
+        SVTROBO 控制台
+    </div>
+    <div class="connection-panel">
+        <input type="text" id="rosbridge-url" readonly title="自动识别，无需手动输入">
+        <button id="connect-btn" class="btn btn-primary">连接</button>
+        <span id="connection-status" class="connection-status status-disconnected">已断开</span>
+    </div>
+</header>
+
+<div id="hardware-status-bar" class="hardware-status-bar"><span class="hw-item hw-unknown"><span class="hw-label">硬件检测中...</span></span></div>
+
+<main class="dashboard">
+
+<section class="panel panel-cameras panel-full">
+        <h2 class="panel-title">相机画面</h2>
+        <div class="camera-grid">
+            <!-- D405 #1 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <span class="camera-name">D405 #1</span>
+                    <span id="cam-d405-1-status" class="cam-status cam-stopped">已停止</span>
+                </div>
+                <div class="camera-feed-container">
+                    <div id="cam-d405-1-fallback" class="camera-fallback-text">相机未启动</div>
+                    <img id="cam-d405-1-feed" class="camera-feed" alt="D405 #1">
+                    <button class="cam-fullscreen-btn" data-cam="d405-1" title="全屏" style="display:none">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                    </button>
+                </div>
+                <div class="camera-actions">
+                    <button id="cam-d405-1-start" class="btn btn-sm btn-primary">启动</button>
+                    <button id="cam-d405-1-stop" class="btn btn-sm btn-stop">停止</button>
+                </div>
+            </div>
+            <!-- D405 #2 -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <span class="camera-name">D405 #2</span>
+                    <span id="cam-d405-2-status" class="cam-status cam-stopped">已停止</span>
+                </div>
+                <div class="camera-feed-container">
+                    <div id="cam-d405-2-fallback" class="camera-fallback-text">相机未启动</div>
+                    <img id="cam-d405-2-feed" class="camera-feed" alt="D405 #2">
+                    <button class="cam-fullscreen-btn" data-cam="d405-2" title="全屏" style="display:none">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                    </button>
+                </div>
+                <div class="camera-actions">
+                    <button id="cam-d405-2-start" class="btn btn-sm btn-primary">启动</button>
+                    <button id="cam-d405-2-stop" class="btn btn-sm btn-stop">停止</button>
+                </div>
+            </div>
+            <!-- ZED 2i -->
+            <div class="camera-card">
+                <div class="camera-header">
+                    <span class="camera-name">ZED 2i</span>
+                    <span id="cam-zed-status" class="cam-status cam-stopped">已停止</span>
+                </div>
+                <div class="camera-feed-container">
+                    <div id="cam-zed-fallback" class="camera-fallback-text">相机未启动</div>
+                    <img id="cam-zed-feed" class="camera-feed" alt="ZED 2i">
+                    <button class="cam-fullscreen-btn" data-cam="zed" title="全屏" style="display:none">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                    </button>
+                </div>
+                <div class="camera-actions">
+                    <button id="cam-zed-start" class="btn btn-sm btn-primary">启动</button>
+                    <button id="cam-zed-stop" class="btn btn-sm btn-stop">停止</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section id="visual-relocalization-panel" class="panel panel-visual-relocalization panel-full">
+        <div class="panel-title-row">
+            <h2 class="panel-title">视觉重定位</h2>
+            <span id="visual-relocalization-status" class="vr-status vr-idle">未运行</span>
+        </div>
+        <div class="vr-body">
+            <label class="vr-field">
+                <span>目标名</span>
+                <input id="visual-relocalization-target" type="text" value="bench_station" autocomplete="off" spellcheck="false">
+            </label>
+            <div class="vr-actions">
+                <button id="visual-relocalization-refresh" class="btn btn-action">状态</button>
+                <button id="visual-relocalization-record" class="btn btn-primary">记录目标</button>
+                <button id="visual-relocalization-start" class="btn btn-action btn-up">开始重定位</button>
+                <button id="visual-relocalization-stop" class="btn btn-stop">停止</button>
+            </div>
+            <div class="vr-meta">
+                <div><span>PID</span><strong id="visual-relocalization-pid">--</strong></div>
+                <div><span>返回码</span><strong id="visual-relocalization-returncode">--</strong></div>
+                <div><span>命令</span><strong id="visual-relocalization-command">--</strong></div>
+            </div>
+            <pre id="visual-relocalization-log" class="vr-log">暂无日志</pre>
+        </div>
+    </section>
+
+<section class="panel panel-motor-status">
+        <h2 class="panel-title">底座状态</h2>
+        <div class="robot-status-body">
+            <!-- Motor Status (merged steer + wheel) -->
+            <div class="motor-status-section">
+                <div class="section-header-row">
+                    <h3 class="motor-section-title">电机</h3>
+                    <span id="dot-motors" class="section-dot offline-dot"></span>
+                </div>
+                <table class="motor-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>前左</th>
+                            <th>前右</th>
+                            <th>后左</th>
+                            <th>后右</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="motor-label-cell">角度</td>
+                            <td><span id="steer-fl-angle">--</span></td>
+                            <td><span id="steer-fr-angle">--</span></td>
+                            <td><span id="steer-rl-angle">--</span></td>
+                            <td><span id="steer-rr-angle">--</span></td>
+                        </tr>
+                        <tr>
+                            <td class="motor-label-cell">速度</td>
+                            <td><span id="steer-fl-vel">--</span></td>
+                            <td><span id="steer-fr-vel">--</span></td>
+                            <td><span id="steer-rl-vel">--</span></td>
+                            <td><span id="steer-rr-vel">--</span></td>
+                        </tr>
+                        <tr>
+                            <td class="motor-label-cell">力矩</td>
+                            <td><span id="steer-fl-torque">--</span></td>
+                            <td><span id="steer-fr-torque">--</span></td>
+                            <td><span id="steer-rl-torque">--</span></td>
+                            <td><span id="steer-rr-torque">--</span></td>
+                        </tr>
+                        <tr>
+                            <td class="motor-label-cell">轮速目标</td>
+                            <td><span id="wheel-fl-target">--</span></td>
+                            <td><span id="wheel-fr-target">--</span></td>
+                            <td><span id="wheel-rl-target">--</span></td>
+                            <td><span id="wheel-rr-target">--</span></td>
+                        </tr>
+                        <tr>
+                            <td class="motor-label-cell">轮速实际</td>
+                            <td><span id="wheel-fl-actual">--</span></td>
+                            <td><span id="wheel-fr-actual">--</span></td>
+                            <td><span id="wheel-rl-actual">--</span></td>
+                            <td><span id="wheel-rr-actual">--</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- IMU Status -->
+            <div class="motor-status-section imu-status-section">
+                <div class="section-header-row">
+                    <h3 class="motor-section-title">IMU 传感器</h3>
+                    <span id="dot-imu" class="section-dot offline-dot"></span>
+                </div>
+                <div class="imu-data-grid">
+                    <div class="imu-group">
+                        <div class="imu-group-title">加速度 (m/s²)</div>
+                        <div class="imu-values">
+                            <div class="imu-row"><span class="imu-axis">X</span><span id="imu-acc-x" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Y</span><span id="imu-acc-y" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Z</span><span id="imu-acc-z" class="imu-val">--</span></div>
+                        </div>
+                    </div>
+                    <div class="imu-group">
+                        <div class="imu-group-title">角速度 (deg/s)</div>
+                        <div class="imu-values">
+                            <div class="imu-row"><span class="imu-axis">X</span><span id="imu-gyro-x" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Y</span><span id="imu-gyro-y" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Z</span><span id="imu-gyro-z" class="imu-val">--</span></div>
+                        </div>
+                    </div>
+                    <div class="imu-group">
+                        <div class="imu-group-title">磁力计 (µT)</div>
+                        <div class="imu-values">
+                            <div class="imu-row"><span class="imu-axis">X</span><span id="imu-mag-x" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Y</span><span id="imu-mag-y" class="imu-val">--</span></div>
+                            <div class="imu-row"><span class="imu-axis">Z</span><span id="imu-mag-z" class="imu-val">--</span></div>
+                        </div>
+                    </div>
+                    <div class="imu-group imu-meta">
+                        <div class="imu-meta-item">
+                            <span class="imu-meta-label">温度</span>
+                            <span id="imu-temp" class="imu-meta-val">-- °C</span>
+                        </div>
+                        <div class="imu-meta-item">
+                            <span class="imu-meta-label">频率</span>
+                            <span id="imu-freq" class="imu-meta-val">-- Hz</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section class="panel panel-distance-sensor">
+        <div class="section-header-row">
+            <h2 class="panel-title">测距传感器</h2>
+            <span id="dot-distance" class="section-dot offline-dot"></span>
+        </div>
+        <div class="distance-grid">
+            <div class="distance-item">
+                <div class="distance-label">前 Front</div>
+                <div class="distance-value" id="dist-front">--</div>
+                <div class="distance-unit">mm</div>
+            </div>
+            <div class="distance-item">
+                <div class="distance-label">右 Right</div>
+                <div class="distance-value" id="dist-right">--</div>
+                <div class="distance-unit">mm</div>
+            </div>
+            <div class="distance-item">
+                <div class="distance-label">后 Rear</div>
+                <div class="distance-value" id="dist-rear">--</div>
+                <div class="distance-unit">mm</div>
+            </div>
+            <div class="distance-item">
+                <div class="distance-label">左 Left</div>
+                <div class="distance-value" id="dist-left">--</div>
+                <div class="distance-unit">mm</div>
+            </div>
+        </div>
+    </section>
+
+<section class="panel panel-battery">
+            <div class="section-header-row">
+            <h2 class="panel-title">电池状态</h2>
+            <span id="dot-battery" class="section-dot offline-dot"></span>
+        </div>
+            <div class="battery-grid">
+                <div class="battery-item">
+                    <div class="battery-label">电压</div>
+                    <div class="battery-value" id="battery-voltage">-- V</div>
+                </div>
+                <div class="battery-item">
+                    <div class="battery-label">电量</div>
+                    <div class="battery-value" id="battery-percent">-- %</div>
+                </div>
+                <div class="battery-item">
+                    <div class="battery-label">温度</div>
+                    <div class="battery-value" id="battery-temp">-- °C</div>
+                </div>
+            </div>
+            <div class="motor-diag-grid">
+                <div class="motor-diag-item">
+                    <div class="battery-label">前左电机</div>
+                    <div class="motor-diag-value" id="motor-fl-temp">-- °C</div>
+                    <div class="motor-diag-error" id="motor-fl-err"></div>
+                </div>
+                <div class="motor-diag-item">
+                    <div class="battery-label">前右电机</div>
+                    <div class="motor-diag-value" id="motor-fr-temp">-- °C</div>
+                    <div class="motor-diag-error" id="motor-fr-err"></div>
+                </div>
+                <div class="motor-diag-item">
+                    <div class="battery-label">后左电机</div>
+                    <div class="motor-diag-value" id="motor-rl-temp">-- °C</div>
+                    <div class="motor-diag-error" id="motor-rl-err"></div>
+                </div>
+                <div class="motor-diag-item">
+                    <div class="battery-label">后右电机</div>
+                    <div class="motor-diag-value" id="motor-rr-temp">-- °C</div>
+                    <div class="motor-diag-error" id="motor-rr-err"></div>
+                </div>
+            </div>
+        </section>
+
+<section class="panel panel-arm-status">
+        <h2 class="panel-title">机械臂状态</h2>
+        <div class="arm-status-body">
+            <!-- Left Arm -->
+            <div id="section-left_arm" class="joint-section offline">
+                <div class="joint-section-header">
+                    <span class="joint-section-title">左臂</span>
+                    <span id="dot-left_arm" class="joint-section-dot offline-dot"></span>
+                </div>
+                <table class="joint-table">
+                    <thead><tr><th>关节</th><th>角度</th><th>速度</th><th>力矩</th></tr></thead>
+                    <tbody id="arm-left-body"><tr><td colspan="4" class="joint-offline-text">未连接</td></tr></tbody>
+                </table>
+            </div>
+            <!-- Right Arm -->
+            <div id="section-right_arm" class="joint-section offline">
+                <div class="joint-section-header">
+                    <span class="joint-section-title">右臂</span>
+                    <span id="dot-right_arm" class="joint-section-dot offline-dot"></span>
+                </div>
+                <table class="joint-table">
+                    <thead><tr><th>关节</th><th>角度</th><th>速度</th><th>力矩</th></tr></thead>
+                    <tbody id="arm-right-body"><tr><td colspan="4" class="joint-offline-text">未连接</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+<section class="panel panel-hand-status">
+        <h2 class="panel-title">灵巧手状态</h2>
+        <div class="hand-status-body">
+            <!-- Left Hand -->
+            <div id="section-left_hand" class="joint-section offline">
+                <div class="joint-section-header">
+                    <span class="joint-section-title">左手</span>
+                    <span id="dot-left_hand" class="joint-section-dot offline-dot"></span>
+                </div>
+                <table class="joint-table">
+                    <thead><tr><th>关节</th><th>位置</th><th>速度</th></tr></thead>
+                    <tbody id="hand-left-body"><tr><td colspan="3" class="joint-offline-text">未连接</td></tr></tbody>
+                </table>
+            </div>
+            <!-- Right Hand -->
+            <div id="section-right_hand" class="joint-section offline">
+                <div class="joint-section-header">
+                    <span class="joint-section-title">右手</span>
+                    <span id="dot-right_hand" class="joint-section-dot offline-dot"></span>
+                </div>
+                <table class="joint-table">
+                    <thead><tr><th>关节</th><th>位置</th><th>速度</th></tr></thead>
+                    <tbody id="hand-right-body"><tr><td colspan="3" class="joint-offline-text">未连接</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+<section id="chassis-panel" class="panel panel-chassis">
+            <div class="panel-title-row">
+                <h2 class="panel-title">底盘与升降控制</h2>
+                <div class="f710-control">
+                    <div id="control-mode-toggle" class="mode-toggle">
+                        <div id="mode-opt-web" class="toggle-option">网页控制</div>
+                        <div id="mode-opt-gamepad" class="toggle-option">手柄控制</div>
+                    </div>
+                </div>
+            </div>
+        <div class="panel-body" style="position: relative;">
+            <div id="gamepad-mode-warning" class="gamepad-mode-warning" style="display: none;">
+                ⚠️ 手柄当前为 X 模式，控制已禁用！请将手柄背面开关拨到 D 模式
+            </div>
+            <div id="web-control-mask" class="mode-disabled-mask" style="display: none;">已切换至手柄模式，网页控制已禁用</div>
+            <div class="chassis-left">
+                <!-- Chassis Control Title -->
+                <div class="section-header-row" style="margin-bottom:16px; justify-content:center;">
+                        <h3 class="motor-section-title">底盘控制</h3>
+                        <span id="dot-chassis-ctrl" class="section-dot offline-dot"></span>
+                    </div>
+
+                <!-- Direction Indicator -->
+                <div class="direction-display">
+                    <div id="keyboard-hint" class="keyboard-focus-hint">点击此处启用键盘控制</div>
+                    <div class="dir-ring">
+                        <div id="dir-n"  class="dir-segment dir-n">W</div>
+                        <div id="dir-ne" class="dir-segment dir-ne">W+E</div>
+                        <div id="dir-e"  class="dir-segment dir-e">E</div>
+                        <div id="dir-se" class="dir-segment dir-se">S+E</div>
+                        <div id="dir-s"  class="dir-segment dir-s">S</div>
+                        <div id="dir-sw" class="dir-segment dir-sw">S+Q</div>
+                        <div id="dir-w"  class="dir-segment dir-w">Q</div>
+                        <div id="dir-nw" class="dir-segment dir-nw">W+Q</div>
+                        <div class="dir-center"></div>
+                    </div>
+                    <!-- Rotation indicators moved to corners -->
+                    <div id="dir-ccw" class="rot-indicator rot-bl">逆时针 (Q)</div>
+                    <div id="dir-cw"  class="rot-indicator rot-br">顺时针 (E)</div>
+                </div>
+
+                <!-- Speed Control -->
+                <div class="speed-control">
+                    <label>速度: <span id="speed-value">0.05</span> m/s</label>
+                    <input type="range" id="speed-slider" min="0.05" max="0.50" step="0.01" value="0.05">
+                </div>
+            </div>
+            <div class="chassis-right">
+                <!-- Lift Control (moved here) -->
+                <div class="section-header-row" style="margin-bottom:16px">
+                        <h3 class="motor-section-title">升降控制</h3>
+                        <span id="dot-lift-ctrl" class="section-dot offline-dot"></span>
+                    </div>
+                <div class="lift-controls-vertical">
+                    <div class="lift-slider-container">
+                        <div class="lift-slider-header">
+                            <span class="lift-slider-title">速度</span>
+                            <span class="lift-slider-val"><span id="lift-speed-value">50</span> <small>RPM</small></span>
+                        </div>
+                        <input type="range" id="lift-speed-slider" class="modern-slider" min="0" max="500" step="10" value="50">
+                    </div>
+                    <div class="lift-buttons-group">
+                        <button id="lift-up" class="btn btn-action btn-up">上升</button>
+                        <button id="lift-stop" class="btn btn-stop">停止</button>
+                        <button id="lift-down" class="btn btn-action btn-down">下降</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section class="panel panel-topics">
+            <div class="section-header-row">
+            <h2 class="panel-title">话题列表 <span id="topic-count" class="topic-count">0</span></h2>
+            <span id="dot-topics" class="section-dot offline-dot"></span>
+        </div>
+            <div id="topic-list" class="topic-container">
+                <div class="topic-empty">暂无订阅话题</div>
+            </div>
+        </section>
+
+</main>
+
+<!-- Load JS modules -->
+<!-- Exit Kiosk Floating Button -->
+<div id="kiosk-exit-btn" class="kiosk-exit-btn" style="display:none;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    退出全屏
+    <span id="kiosk-exit-countdown" class="kiosk-exit-countdown">10s</span>
+</div>
+
+<script src="/static/js/master-lock.js?v=1779888539"></script>
+<script src="/static/js/chassis.js?v=1779888539"></script>
+<script src="/static/js/lift.js?v=1779888539"></script>
+<script src="/static/js/camera.js?v=1783940977"></script>
+<script src="/static/js/status.js?v=1779888539"></script>
+<script src="/static/js/diagnostics.js?v=1779888539"></script>
+<script src="/static/js/chassis-status.js?v=1779888539"></script>
+<script src="/static/js/joint-display.js?v=1779888539"></script>
+<script src="/static/js/imu-status.js?v=1779888539"></script>
+<script src="/static/js/f710-toggle.js?v=1779888539"></script>
+<script src="/static/js/hardware-status.js?v=1779888539"></script>
+<script src="/static/js/distance-sensor.js?v=1779888539"></script>
+<script src="/static/js/data-record.js?v=1779888539"></script>
+<script src="/static/js/rec-panel.js?v=1779888539"></script>
+<script src="/static/js/visual-relocalization.js?v=1779888539"></script>
+<script>
+// MasterLock diagnostics - inline before module load
+window._ml_diag = [];
+window.addEventListener('error', function(e) {
+    window._ml_diag.push('ERROR: ' + (e.message || e) + ' at ' + (e.filename||'') + ':' + (e.lineno||''));
+});
+</script>
+<script src="/static/js/app.js?v=1783940977"></script>
+
+
+</body>
+</html>

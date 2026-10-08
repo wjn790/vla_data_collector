@@ -1,0 +1,16 @@
+[Unit]
+Description=svtrobo F710 Gamepad Teleop
+After=svtrobo-chassis.service f710-fix.service
+Wants=f710-fix.service
+
+[Service]
+Type=simple
+User=svt
+Environment=ROS_DOMAIN_ID=0
+ExecStartPre=/bin/bash -c "for i in $(seq 1 30); do [ -e /dev/input/js0 ] && exit 0; sleep 1; done; exit 1"
+ExecStart=/bin/bash -c "source /opt/ros/humble/setup.bash && source /home/svt/svtrobo_ws/install/setup.bash && exec ros2 launch f710_teleop f710_teleop.launch.py"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

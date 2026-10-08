@@ -1,0 +1,15 @@
+[Unit]
+Description=svtrobo Web Control Panel
+After=svtrobo-chassis.service
+
+[Service]
+Type=simple
+User=svt
+WorkingDirectory=/home/svt/svtrobo_ws/src/web_control
+Environment=ROS_DOMAIN_ID=0
+ExecStart=/bin/bash -c "source /opt/ros/humble/setup.bash && source /home/svt/svtrobo_ws/install/setup.bash && exec python3 server.py --host 0.0.0.0 --port 8080"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

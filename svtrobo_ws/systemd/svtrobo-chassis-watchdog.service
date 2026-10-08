@@ -1,0 +1,15 @@
+[Unit]
+Description=Chassis Control Node Watchdog
+After=svtrobo-chassis.service
+Wants=svtrobo-chassis.service
+
+[Service]
+Type=simple
+User=svt
+Environment=ROS_DOMAIN_ID=0
+ExecStart=/bin/bash /home/svt/svtrobo_ws/scripts/chassis_watchdog.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
